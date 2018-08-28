@@ -14,22 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::get('model', function() {
-    $products = \App\Models\Product\Product::
-    with(['category', 'price', 'feedstock.feedstock', 'side_dish.side_dish'])
-    ->get()->toArray();
-
-    foreach ($products as $key => $product) {
-
-        foreach ($product['feedstock'] as $key2 => $item) {
-            $products[$key]['feedstock'][$key2] = $item['feedstock'];
-        }
-
-        foreach ($product['side_dish'] as $key2 => $item) {
-            $products[$key]['side_dish'][$key2] = $item['side_dish'];
-        }
-    }
-
-    return $products;
+    return \App\Models\Product\Product::with(['category', 'price', 'feedstock', 'side_dish'])->get();
 });
 
 Route::get('close/{session}', function ($session) {
@@ -76,22 +61,19 @@ Route::get('view/{id?}', function ($id = '') {
 
 Route::middleware(['api'])->resource('cart', 'Cart\CartController');
 Route::middleware(['api'])->resource('order', 'Order\OrderController');
+Route::middleware(['api'])->resource('user', 'Site\User\UserController');
 
-Route::group([
-    'namespace' => 'Auth',
-    'prefix' => 'auth',
-    'middleware' => ['api', 'cors']
-], function ($router) {
-    Route::post('login', 'AuthController@login');
+Route::group([ 'namespace' => 'Auth', 'prefix' => 'auth', 'middleware' => ['api', 'cors'] ],
+    function ($router) {
+        Route::post('login', 'AuthController@login');
+        Route::post('oauth/login', 'SocialiteController@login');
+        Route::get('login/{provider}', 'SocialiteController@redirect');
+        Route::get('login/{provider}/callback', 'SocialiteController@callback');
 
-    Route::post('oauth/login', 'SocialiteController@login');
-    Route::get('login/{provider}', 'SocialiteController@redirect');
-    Route::get('login/{provider}/callback', 'SocialiteController@callback');
-
-    Route::post('register', 'AuthController@register');
-    Route::post('logout', 'AuthController@logout');
-    Route::get('refresh', 'AuthController@refresh');
-    Route::get('user', 'AuthController@user');
+        Route::post('register', 'AuthController@register');
+        Route::post('logout', 'AuthController@logout');
+        Route::get('refresh', 'AuthController@refresh');
+        Route::get('user', 'AuthController@user');
 });
 
 Route::group([

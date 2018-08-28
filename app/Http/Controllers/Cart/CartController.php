@@ -38,7 +38,7 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-            $expiresAt = Carbon::now()->addMinutes(30);
+            $expiresAt = Carbon::now()->addMinutes(180);
             $cache_id = $request->cache_id;
 
             $id = $request->id;
@@ -53,24 +53,15 @@ class CartController extends Controller
                 return $query->find($id);
             }])
             ->with(['side_dish' => function($query) use ($sideDish) {
-                $query->whereIn('side_dish_id', $sideDish);
-                return $query->with('side_dish');
+                return $query->whereIn('side_dish_id', $sideDish);
+
             }])
             ->with(['feedstock' => function($query) use ($feedstock) {
-                $query->whereIn('feedstock_id', $feedstock);
-                return $query->with('feedstock');
+                return $query->whereIn('feedstock_id', $feedstock);
             }])
             ->first()->toArray();
 
             $product['price'] = $product['price'][0];
-
-            foreach ($product['feedstock'] as $key => $item) {
-                $product['feedstock'][$key] = $item['feedstock'];
-            }
-
-            foreach ($product['side_dish'] as $key => $item) {
-                $product['side_dish'][$key] = $item['side_dish'];
-            }
 
             $payLoad = [
                 'product_id' => $product['id'],
@@ -99,13 +90,6 @@ class CartController extends Controller
 
                         $diff_array = array_diff(array_map('json_encode', $products[$key]), array_map('json_encode', $payLoad));
                         $diff_array2 = array_diff(array_map('json_encode', $payLoad), array_map('json_encode', $products[$key]));
-
-                        // $diff_sideDish_payLoad = array_diff(array_map('json_encode', $products[$key]['side_dish']), array_map('json_encode', $payLoad['side_dish']));
-                        // $diff_payLoad_sideDish = array_diff(array_map('json_encode', $products[$key]['side_dish']), array_map('json_encode', $payLoad['side_dish']));
-                        //
-                        // $diff_feedstock_payLoad = array_diff(array_map('json_encode', $products[$key]['feedstock_except']), array_map('json_encode', $payLoad['feedstock_except']));
-                        // $diff_payLoad_feedstock = array_diff(array_map('json_encode', $payLoad['feedstock_except']), array_map('json_encode', $products[$key]['feedstock_except']));
-
 
                         unset($diff_array['qtd']);
                         unset($diff_array['subtotal']);

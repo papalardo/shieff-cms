@@ -1,20 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Site\User;
 
 use Illuminate\Http\Request;
-use App\Transformers\ProductTransformer;
-use App\Models\Product\Product;
+use App\Http\Controllers\Controller;
 
-class ProductController extends Controller
+class UserController extends Controller
 {
-    protected $model;
-
-    function __construct(Product $product)
-    {
-        $this->model = $product;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -22,10 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return $products = $this->model
-        ->with(['category', 'price', 'feedstock', 'side_dish'])->get();
-
-        // return fractal($this->model->all(), new ProductTransformer())->respond();
+        //
     }
 
     /**
@@ -46,7 +35,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->model->create($request->all());
+        return $request->all();
     }
 
     /**
@@ -57,7 +46,18 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        return fractal(Product::find($id), new ProductTransformer())->respond();
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
     }
 
     /**
@@ -69,10 +69,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $product = $this->model->findOrFail($id);
-        $product->fill($request->all());
-        $product->save();
-        return 'ok';
+        //
     }
 
     /**
@@ -83,8 +80,6 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = $this->model->findOrFail($id);
-        $product->delete();
-        return 'ok';
+        //
     }
 }

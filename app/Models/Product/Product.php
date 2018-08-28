@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $table = 'product';
-    
+
   /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 
-        'description', 
+        'name',
+        'description',
         'category_id'
     ];
 
@@ -32,11 +32,11 @@ class Product extends Model
     }
 
     public function feedstock() {
-      return $this->hasMany(HasFeedstock::class, 'product_id', 'id');
+      return $this->belongsToMany(Feedstock::class, 'product_has_feedstock');
     }
 
     public function side_dish() {
-    	return $this->hasMany(HasSideDish::class, 'product_id', 'id');
+    	return $this->belongsToMany(SideDish::class, 'product_has_side_dish');
     }
 
 }
